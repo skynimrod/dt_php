@@ -1,0 +1,44 @@
+
+参见:
+
+   http://lyongde.javaeye.com/blog/480797
+
+PHP关于VC9和VC6以及Thread Safe和Non Thread Safe版本选择的问题
+
+    关于VC9和VC6以及Thread Safe和Non Thread Safe版本选择的问题
+
+ 
+
+    最近在PHP官网上看到又有新版的PHP下载了，于是上去找找For Windows的版本，可是一看确傻眼了，一共给了四个版本，VC9 x86 Non Thread Safe、VC9 x86 Thread Safe、VC6 x86 Non Thread Safe、VC6 x86 Thread Safe，这让我这个菜鸟头疼啊，还好PHP官网提供下载的地方左边有个英文choose我看懂了，我估摸着就是如何来选择版本的意思吧，于是开始查字典及上网查找，终于看明白了具体意思，拿来做个备忘先。
+
+ 
+
+一、如何选择PHP5.3的VC9版本和VC6版本
+
+ 
+
+    VC6版本是使用Visual Studio 6编译器编译的，如果你的PHP是用Apache来架设的，那你就选择VC6版本。
+
+ 
+
+    VC9版本是使用Visual Studio 2008编译器编译的，如果你的PHP是用IIS来架设的，那你就选择VC9版本。
+
+ 
+
+二、如何选择PHP5.3的Thread Safe和Non Thread Safe版本
+
+ 
+
+    先从字面意思上理解，Thread Safe是线程安全，执行时会进行线程（Thread）安全检查，以防止有新要求就启动新线程的CGI执行方式而耗尽系统资源。Non Thread Safe是非线程安全，在执行时不进行线程（Thread）安全检查。
+
+ 
+
+    再来看PHP的两种执行方式：ISAPI和FastCGI。
+
+ 
+
+    ISAPI执行方式是以DLL动态库的形式使用，可以在被用户请求后执行，在处理完一个用户请求后不会马上消失，所以需要进行线程安全检查，这样来提高程序的执行效率，所以如果是以ISAPI来执行PHP，建议选择Thread Safe版本；
+
+ 
+
+    而FastCGI执行方式是以单一线程来执行操作，所以不需要进行线程的安全检查，除去线程安全检查的防护反而可以提高执行效率，所以，如果是以FastCGI来执行PHP，建议选择Non Thread Safe版本。

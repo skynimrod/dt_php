@@ -1,0 +1,110 @@
+参见:
+
+     http://blog.csdn.net/dyllove98/article/details/41120789
+
+     http://www.inbeijing.org/archives/1181
+
+. 针对Nginx的php安装和针对apache的php安装是有区别的，因为Nginx中的php是以fastcgi的方式结合nginx的，可以理解为nginx代理了php的fastcgi，而apache是把php作为自己的模块来调用的
+
+. 1. 安装Nginx
+
+     下载Nginx-1.11.2.zip 文件, 解压后把 包含conf 子目录的Nginx-1.11.2 目录拷贝到目标运行分区. 直接运行 nginx.exe. 然后再浏览器测试是否成功运行:
+
+     http://localhost:80
+
+      如果出现Nginx的欢迎信息, 表示成功运行.
+
+     由于是C 语言写的核心代码, 运行速度非常快. 占用空间也非常小( 整个Nginx 目录也就3.5MB )
+
+. 2. PHP 7 安装
+  
+     从Http://www.php.net 下载 PHP7.0.11-nts(非线程安全模式)， 然后解压， 然后把包含php.exe、php-cgi.exe等文件的整个目录拷贝到目标运行分区。
+
+     最好适合Nginx 在同一个父目录下面.
+
+     然后添加系统环境变量: PHP_HOME=刚才的PHP 目录，把PATH=%PATH%;%PHP_HOME%
+
+     php.ini-development 文件复制一个php.ini 文件. 
+
+     测试是否可用。 命令行下面: php -help.  如果出现提示信息,表示PHP 安装成功.
+
+. 3. 修改Nginx 配置文件来设置 FastCGI 为PHP-CGI.exe
+
+     由于Nginx 1.11.2的 fastcgi.conf 已经设置了PHP 的相关设置, 就不用单独进行修改了; 只需要修改 nginx.conf 来设置PHP相关的信息以及WebServer 的路径即可.
+
+     只需要修改Nginx.conf 两处即可:
+
+     A. 寻找 location ~ \.php$ 部分, 修改如下. 去掉注释符， 并且修改root 为WebServer 目录(也就是运行PHP文件,html文件等位置的目录)
+
+location ~ \.php$ {
+            root           D:/D_0_DevEnv/w_webserver;
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+
+     B. 寻找 location / { 部分, 修改如下.   修改root 为目标webserver 的目录, index 添加index.php(这样就可以优先访问inde.php了)
+
+      location / {
+            root   D:/D_0_DevEnv/w_webserver;
+            index  index.html index.htm index.php;
+        }
+
+     C. 开启错误日志文件，以便出错的时候参考调试。
+
+        #error_log  logs/error.log; 去掉#就可以开启错误日志。
+
+. 4. 修改PHP配置文件
+
+     编辑php.ini然后搜索;cgi.fix_pathinfo=1 将前面的分号去掉，保存！(经过测试，这个注释掉也不影响运行Nginx1.11.2+Php7)
+
+. 5. 当你启动php之后你会发现cmd小窗口不能自动关掉了，如果手动关掉php就挂掉了，接下来解决这个问题
+
+     使用 RunHiddenConsole.exe 来进行处理.
+
+     A. 下载:
+
+         http://www.inbeijing.org/wp-content/uploads/2015/06/RunHiddenConsole.zip
+
+     B. 解压 RunHiddenConsole.zip 到RunHiddenConsole子目录, 最好把该子目录与Nginx, PHP 放在相同的父目录下面.
+
+     C. 修改 RunHiddenConsole子目录下面的 start_nginx.bat如下: (核心就是修改Nginx.exe , Php.exe 的正确路径)
+
+@echo off
+REM Windows 下无效
+REM set PHP_FCGI_CHILDREN=5
+
+set NGINX_HOME=D:/D_0_DevEnv/nginx-1.11.2
+
+REM 每个进程处理的最大请求数，或设置为 Windows 环境变量
+set PHP_FCGI_MAX_REQUESTS=1000
+ 
+echo Starting PHP FastCGI...
+RunHiddenConsole D:/D_0_DevEnv/php-7.0.11-nts/php-cgi.exe -b 127.0.0.1:9000 -c D:/D_0_DevEnv/php-7.0.11-nts/php.ini
+ 
+echo Starting nginx...
+RunHiddenConsole D:/D_0_DevEnv/nginx-1.11.2/nginx.exe -p D:/D_0_DevEnv/nginx-1.11.2    
+
+     D. 修改 RunHiddenConsole子目录下面的 stop_nginx.bat如下: (核心就是修改Nginx.exe , Php.exe 的正确路径)
+
+@echo off
+echo Stopping nginx...  
+taskkill /F /IM nginx.exe > nul
+echo Stopping PHP FastCGI...
+taskkill /F /IM php-cgi.exe > nul
+exit
+
+. 6. 关于漏洞1（nginx文件类型错误解析漏洞）
+
+  参见: 
+
+       http://blog.csdn.net/neubuffer/article/details/16901023
+
+  如果index.php 修改为index.jpg, 存放在webserver的test子目录下面. 那么下面的URL 
+
+     http://localhost/test/index.jpg/a.php
+
+  实际上执行的是index.jpg  修改名字之前的index.php 的内容.  而a.php 是实际上不存在的.
+
+  重新把cgi.fix_pathinfo=1 注释, 发现仍然可以正常访问之前的webserver 内容, 但是上面的漏洞仍然存在。。。

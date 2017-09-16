@@ -1,0 +1,252 @@
+. 参见:
+
+       http://symfony.cn/docs/book/page_creation.html
+
+       http://www.chrisyue.com/symfony2-in-action-day-1.html   这个博客内容写的更详细.
+
+. 0. 先创建一个symfony项目
+
+   php symfony.phar new adamstest
+
+   系统会自动下载symfony 需要的框架文件. 需要几分钟时间.
+
+    5.15 MB/5.15 MB ============================================================
+  100%
+
+ Preparing project...
+
+ OK  Symfony 3.1.4 was successfully installed. Now you can:
+
+    * Change your current directory to F:\F_3_test\2_PHP\adamstest
+
+    * Configure your application in app/config/parameters.yml file.
+
+    * Run your application:
+        1. Execute the php bin/console server:run command.
+        2. Browse to the http://localhost:8000 URL.
+
+    * Read the documentation at http://symfony.com/doc
+
+这与之前的symfony 版本不同. 之前的symfony 创建的项目运行命令是:
+
+        php symfony app/console server:start localhost:8000 
+
+    显然, console 的目录发生了变化,改到了bin下面. 而且server后面的命令也由start 改成了run。
+
+   
+
+symfony入门之 app/console 命令 
+
+    http://www.cnblogs.com/g825482785/p/symfony.html
+
+    http://blog.it985.com/7466.html    这儿对这个命令的参数等说明非常详细.
+
+    php bin/console list 可以看到所有的命令       
+
+
+. 1. 创建页面
+
+     用symfony框架创建新页面，只需简单的2个步骤
+
+     A. 创建一个路由 route
+
+     B. 创建一个控制器controller
+
+     开始之前, 需要创建一个bundle. 在Symfony中, 一个bundle类似于一个插件, 应用中的所有代码都在一个bundle中.
+
+     例如:
+    
+     F:\F_3_test\2_PHP\adamstest>php bin/console generate:bundle --namespace=Acme/Dem
+oBundle --format=yml
+
+
+  Welcome to the Symfony bundle generator!
+
+
+Are you planning on sharing this bundle across multiple applications? [no]: no
+
+Your application code must be written in bundles. This command helps
+you generate them easily.
+
+Give your bundle a descriptive name, like BlogBundle.
+Bundle name [Acme/DemoBundle]:
+
+In your code, a bundle is often referenced by its name. It can be the
+concatenation of all namespace parts but it's really up to you to come
+up with a unique name (a good practice is to start with the vendor name).
+Based on the namespace, we suggest AcmeDemoBundle.
+
+Bundle name [AcmeDemoBundle]:
+
+Bundles are usually generated into the src/ directory. Unless you're
+doing something custom, hit enter to keep this default!
+
+Target Directory [src/]:
+
+What format do you want to use for your generated configuration?
+
+Configuration format (annotation, yml, xml, php) [yml]:
+
+
+  Bundle generation
+
+
+> Generating a sample bundle skeleton into F:\F_3_test\2_PHP\adamstest\app/../sr
+c/Acme/DemoBundle OK!
+> Checking that the bundle is autoloaded: OK
+> Enabling the bundle inside F:\F_3_test\2_PHP\adamstest\app\AppKernel.php: OK
+> Importing the bundle's routes from the F:\F_3_test\2_PHP\adamstest\app\config\
+routing.yml file: OK
+> Importing the bundle's services.yml from the F:\F_3_test\2_PHP\adamstest\app\c
+onfig\config.yml file: OK
+
+
+  Everything is OK! Now get to work :).
+
+
+
+F:\F_3_test\2_PHP\adamstest>
+
+      实际上就是创建了一个src/Acme/DemoBundle 目录.    app/AppKernel.php 中会自动添加这个Bundle 的注册信息.
+
+  A. 创建路有 route
+
+  # src/Acme/DemoBundle/Resources/config/routing.yml
+random:
+    path:     /random/{limit}
+    defaults: { _controller: AcmeDemoBundle:Random:index }
+
+  B. 创建controller
+
+    
+. 2. 创建业务模型
+
+   php bin/console doctrine:generate:entity
+
+   此时会有欢迎提示出现，并且让你输入一个模型的“短名字”，为什么说是要输入短名字？News 并不是全名，全名应该是包含命名空间的，比如我们的 News 全名应该是 AppBundle\Entity\News，Entity 是什么？Entity 只是一个习惯性叫法。在 Doctrine2 的世界里，只要是 ORM 过的模型，都叫 Entity（除此之外还有用 MongoDB 作为存储方案的 ODM，ODM 过的模型习惯称之为 Document）。
+
+后面我们就按照他们的提示，分别输入：
+
+The Entity shortcut name: AppBundle:News
+Configuration format (yml, xml, php, or annotation) [annotation]: #这里直接回车确认就好
+New field name (press <return> to stop adding fields): title
+Field type [string]: #直接回车
+Field length [255]: 70 #这里我们很明确只需要70的长度
+New field name (press <return> to stop adding fields): body
+Field type [string]: text
+New field name (press <return> to stop adding fields): #直接回车停止添加字段
+Do you want to generate an empty repository class [no]? yes 是否创建新闻仓库类，这里我们先yes，之后解释
+Do you confirm generation [yes]? #回车完成代码生成
+
+F:\F_3_test\2_PHP\adamstest>php bin/console doctrine:generate:entity
+
+
+  Welcome to the Doctrine2 entity generator
+
+
+
+This command helps you generate Doctrine2 entities.
+
+First, you need to give the entity name you want to generate.
+You must use the shortcut notation like AcmeBlogBundle:Post.
+
+The Entity shortcut name: usertbl
+ The entity name isn't valid ("usertbl" given, expecting something like AcmeBlog
+Bundle:Blog/Post)
+The Entity shortcut name: User
+ The entity name isn't valid ("User" given, expecting something like AcmeBlogBun
+dle:Blog/Post)
+The Entity shortcut name: New
+ The entity name isn't valid ("New" given, expecting something like AcmeBlogBund
+le:Blog/Post)
+The Entity shortcut name: News
+ The entity name isn't valid ("News" given, expecting something like AcmeBlogBun
+dle:Blog/Post)
+The Entity shortcut name: AcmeDemoBundle:User
+
+
+  [Doctrine\DBAL\Exception\DriverException]
+  An exception occured in driver: could not find driver
+
+
+
+  [Doctrine\DBAL\Driver\PDOException]
+  could not find driver
+
+
+
+  [PDOException]
+  could not find driver
+
+
+doctrine:generate:entity [--entity ENTITY] [--fields FIELDS] [--format FORMAT] [
+-h|--help] [-q|--quiet] [-v|vv|vvv|--verbose] [-V|--version] [--ansi] [--no-ansi
+] [-n|--no-interaction] [-e|--env ENV] [--no-debug] [--] <command>
+
+
+F:\F_3_test\2_PHP\adamstest>
+
+-------------------------------------------------------------------------------------------------------------
+
+创建失败了, 使用doctrine 创建数据块 模型对象 参见  Doctrine相关的文档. (4. 关于Doctrine.txt)
+
+上面的失败原因是PDO 设置有问题, php.ini 中extension=php_pdo_mysql.dll 的注释去掉,  之前的版本是要求把 php_pdo_mysql.dll 拷贝到system32下面, 但是php7 拷贝到system32下面仍然有上面的错误, 用phpinfo()查看, 提示在c:\php\ext\找不到 php_pdo_mysql.dll, 于是手工创建了c:\php\ext\目录, 并把 php_pdo_mysql.dll 拷贝到该目录. 于是pdo driver 算是通过了, 不过又出现了下面的错误:
+
+F:\F_3_test\2_PHP\adamstest>php bin/console doctrine:generate:entity
+
+
+  Welcome to the Doctrine2 entity generator
+
+
+
+This command helps you generate Doctrine2 entities.
+
+First, you need to give the entity name you want to generate.
+You must use the shortcut notation like AcmeBlogBundle:Post.
+
+The Entity shortcut name: AcmeDemoBundle:User
+
+
+  [Doctrine\DBAL\Exception\ConnectionException]
+  An exception occured in driver: SQLSTATE[HY000] [1045] Access denied for us
+  er 'root'@'localhost' (using password: NO)
+
+
+
+  [Doctrine\DBAL\Driver\PDOException]
+  SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using pas
+  sword: NO)
+
+
+
+  [PDOException]
+  SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using pas
+  sword: NO)
+
+
+doctrine:generate:entity [--entity ENTITY] [--fields FIELDS] [--format FORMAT] [
+-h|--help] [-q|--quiet] [-v|vv|vvv|--verbose] [-V|--version] [--ansi] [--no-ansi
+] [-n|--no-interaction] [-e|--env ENV] [--no-debug] [--] <command>
+
+
+F:\F_3_test\2_PHP\adamstest>
+
+--------------------------------------------
+
+这个错误是访问数据库权限问题, 需要设置权限.  
+
+  在 app/config/parameters.yml 中设置数据库连接的相关设置. 
+
+parameters:
+
+    database_driver: pdo_mysql
+
+    database_host: 127.0.0.1
+
+    database_port: 3306
+
+    database_name: smms_db
+
+    database_user: root
+
+    database_password: gPekin1

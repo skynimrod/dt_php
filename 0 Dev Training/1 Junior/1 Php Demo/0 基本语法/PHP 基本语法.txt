@@ -1,0 +1,586 @@
+. 基本的 PHP 语法
+
+  PHP 的脚本块以 <?php 开始, 以 ?> 结束.  可以把 php 的脚本放置在文档中的任何位置.
+
+  当然, 在支持简写的服务器上， 可以使用<? 和?> 来开始和结束脚本块.
+
+  不过为了达到最好的兼容性, 最好使用标准形式(<?php>)
+
+  PHP 文件通常会包含HTML 标签, 就像一个HTML 文件, 以及一些 PHP 脚本代码.
+
+  一个 简单的PHP 脚本例子("Hello World")
+
+  <html>
+  <body>
+
+  <?php
+  echo "Hello World";
+  ?>
+
+  </body>
+  </html>
+
+. PHP 中的注释与C 中的注释一样. \\  /*  */,还支持 # 注释
+
+. 关于大小写敏感
+
+  在 PHP 中，所有用户定义的函数、类和关键词（例如 if、else、echo 等等）都对大小写不敏感。
+
+  不过在 PHP 中，所有变量都对大小写敏感。
+
+. PHP 中的变量
+
+  PHP 中的所有变量都是以$ 符号开始的
+
+  $var_name = value;
+
+  例如:
+
+      <?php
+           $txt = "Hello World!";
+           $number = 16;
+      ?>
+
+  PHP 是一门松散类型的语言( Loosely Typed Language ), 不需要在设置变量之前声明该变量.  根据变量被设置的方式, PHP 会自动的把变量转换为正确的数据类型.   在PHP 中, 变量会在使用时 被自动声明.
+
+. 变量的明明规则
+
+  变量名必须以字母或下划线"_" 开头.
+
+  变量名只能包含字母数字字符以及下划线
+
+  变量名不能包含空格
+
+. 常量
+
+  如需设置常量，请使用 define() 函数 - 它使用三个参数：
+
+    首个参数定义常量的名称
+    第二个参数定义常量的值
+    可选的第三个参数规定常量名是否对大小写敏感。默认是 false。
+
+下例创建了一个对大小写敏感的常量，值为 "Welcome to W3School.com.cn!"：
+实例
+
+<?php
+define("GREETING", "Welcome to W3School.com.cn!");
+echo GREETING;
+?>
+
+
+下例创建了一个对大小写不敏感的常量，值为 "Welcome to W3School.com.cn!"：
+实例
+
+<?php
+define("GREETING", "Welcome to W3School.com.cn!", true);
+echo greeting;
+?>
+
+
+. 字符串
+
+  <?php
+  $txt = "Hello World!";
+  echo $txt;
+  ?>
+
+. 并置运算符 ( Concatenation Operator )  ---------------- 应该翻译为连接运算符吧？？
+
+  在PHP 中, 只有一个字符串运算符 : 并置运算符(.), 用于把两个字符串值连接起来.
+
+  <?php
+    $txt1 = "Hello World!";
+    $txt2 = "1234";
+    echo $txt1 . " " . $txt2;
+  ?>
+
+运算符 	名称 	例子 	结果
+. 	串接 	$txt1 = "Hello" $txt2 = $txt1 . " world!" 	现在 $txt2 包含 "Hello world!"
+.= 	串接赋值 	$txt1 = "Hello" $txt1 .= " world!" 	现在 $txt1 包含 "Hello world!"
+
+. PHP 递增/递减运算符
+运算符 	名称 	描述
+++$x 	前递增 	$x 加一递增，然后返回 $x
+$x++ 	后递增 	返回 $x，然后 $x 加一递增
+--$x 	前递减 	$x 减一递减，然后返回 $x
+$x-- 	后递减 	返回 $x，然后 $x 减一递减
+
+. PHP 比较运算符
+
+PHP 比较运算符用于比较两个值（数字或字符串）：
+运算符 	名称 	例子 	结果
+== 	等于 	$x == $y 	如果 $x 等于 $y，则返回 true。
+=== 	全等（完全相同） 	$x === $y 	如果 $x 等于 $y，且它们类型相同，则返回 true。
+!= 	不等于 	$x != $y 	如果 $x 不等于 $y，则返回 true。
+<> 	不等于 	$x <> $y 	如果 $x 不等于 $y，则返回 true。
+!== 	不全等（完全不同） 	$x !== $y 	如果 $x 不等于 $y，且它们类型不相同，则返回 true。
+> 	大于 	$x > $y 	如果 $x 大于 $y，则返回 true。
+< 	大于 	$x < $y 	如果 $x 小于 $y，则返回 true。
+>= 	大于或等于 	$x >= $y 	如果 $x 大于或者等于 $y，则返回 true.
+<= 	小于或等于 	$x <= $y 	如果 $x 小于或者等于 $y，则返回 true。
+
+. PHP 逻辑运算符
+运算符 	名称 	例子 	结果
+and 	与 	$x and $y 	如果 $x 和 $y 都为 true，则返回 true。
+or 	或 	$x or $y 	如果 $x 和 $y 至少有一个为 true，则返回 true。
+xor 	异或 	$x xor $y 	如果 $x 和 $y 有且仅有一个为 true，则返回 true。
+&& 	与 	$x && $y 	如果 $x 和 $y 都为 true，则返回 true。
+|| 	或 	$x || $y 	如果 $x 和 $y 至少有一个为 true，则返回 true。
+! 	非 	!$x 	如果 $x 不为 true，则返回 true。
+
+
+. PHP 数组运算符用于比较数组：
+运算符 	名称 	例子 	结果
++ 	联合 	$x + $y 	$x 和 $y 的联合（但不覆盖重复的键）
+== 	相等 	$x == $y 	如果 $x 和 $y 拥有相同的键/值对，则返回 true。
+=== 	全等 	$x === $y 	如果 $x 和 $y 拥有相同的键/值对，且顺序相同类型相同，则返回 true。
+!= 	不相等 	$x != $y 	如果 $x 不等于 $y，则返回 true。
+<> 	不相等 	$x <> $y 	如果 $x 不等于 $y，则返回 true。
+!== 	不全等 	$x !== $y 	如果 $x 与 $y 完全不同，则返回 true。
+
+
+. strlen() 函数
+
+  <?php
+    echo strlen("Hello world!");
+  ?>
+
+  输出: 12
+
+. strpos() 函数  : 用于在字符串内检索一段字符串或一个字符
+
+  如果找到匹配的, 该函数会返回第一个匹配的位置, 如果未找到匹配的,  则返回FALSE.
+
+  <?php
+    echo strpos("Hello world!", "world");
+  ?>
+  返回: 6
+
+  没有返回7, 因为字符串首位置是0.
+
+. 其他语法略, 基本与C 类似, 具体参见www.w3school.com.cn
+
+  if ()  {
+
+  }
+
+  if () {
+  } elseif () {
+  }
+
+   ---------------------
+
+   switch () {
+
+   case ...:
+            ;
+   case ...:
+  
+   default :
+ 
+            ;
+   }
+
+. 数组
+
+  有三种数组类型:
+
+   数值数组:
+
+       $name= array("peter", "quagmire", "joe");
+
+       $name[0] = "peter";
+       $name[1] = "quagmire";
+       $name[2] = "joe";
+ 
+   关联数组:
+
+       $ages = array("peter"=>32, "quagmire"=>30, "joe"=>34);
+
+       $ages['pater'] = "32";
+       $ages['quagmire'] = "30";
+       $ages['joe'] = "34";
+
+   多维数组:
+
+    $families = array (
+ 
+          "Griffin"=>array (
+  
+                "Peter", "Lois", "Megan" ),
+
+          "Quagmire"=>array (
+
+                "Glenn" ),
+
+          "Brown"=>array (
+
+                "Cleveland", "Loretta", "Junior" )
+    );
+
+. 循环
+
+  while () {
+  }
+
+  do {
+  } while ();
+
+  for ( ; ; ) {
+  }
+
+foreach (array as value)
+{
+    code to be executed;
+}
+
+$arr=array("one", "two", "three");
+
+foreach ($arr as $value)
+{
+  echo "Value: " . $value . "<br />";
+}
+  
+  
+. 函数
+
+  PHP 的真正力量来自它的函数：它拥有超过 1000 个内建的函数。
+
+除了内建的 PHP 函数，我们可以创建我们自己的函数。
+
+函数是可以在程序中重复使用的语句块。
+
+页面加载时函数不会立即执行。
+
+函数只有在被调用时才会执行。
+
+  function writeMyName($fname) 
+  {
+         echo $fname . " Yang.<br />";
+
+        return $fname;
+  }
+ 
+PHP 默认参数值
+
+下面的例子展示了如何使用默认参数。如果我们调用没有参数的 setHeight() 函数，它的参数会取默认值：
+实例
+
+<?php
+function setHeight($minheight=50) {
+  echo "The height is : $minheight <br>";
+}
+
+setHeight(350);
+setHeight(); // 将使用默认值 50
+setHeight(135);
+setHeight(80);
+?>
+
+PHP 函数 - 返回值
+
+如需使函数返回值，请使用 return 语句：
+实例
+
+<?php
+function sum($x,$y) {
+  $z=$x+$y;
+  return $z;
+}
+
+echo "5 + 10 = " . sum(5,10) . "<br>";
+echo "7 + 13 = " . sum(7,13) . "<br>";
+echo "2 + 4 = " . sum(2,4);
+?>
+
+
+. php 表单处理
+
+  表单实例:
+
+<html>
+<body>
+
+<form action="welcome.php" method="post">
+Name: <input type="text" name="name" />
+Age: <input type="text" name="age" />
+<input type="submit" />
+</form>
+
+</body>
+</html>
+
+上面的 HTML 页面实例包含了两个输入框和一个提交按钮。当用户填写该表单并单击提交按钮时，表单的数据会被送往 "welcome.php" 这个文件。
+
+"welcome.php" 文件类似这样：
+
+<html>
+<body>
+
+Welcome <?php echo $_POST["name"]; ?>.<br />
+You are <?php echo $_POST["age"]; ?> years old.
+
+</body>
+</html>
+上面这个脚本的输出样本类似这样：
+Welcome John.
+You are 28 years old.
+
+表单验证
+
+应该在任何可能的时候对用户输入进行验证。客户端的验证速度更快，并且可以减轻服务器的负载。
+不过，任何流量很高以至于不得不担心服务器资源的站点，也有必要担心站点的安全性。如果表单访问的是数据库，就非常有必要采用服务器端的验证。
+在服务器验证表单的一种好的方式是，把表单传给它自己，而不是跳转到不同的页面。这样用户就可以在同一张表单页面得到错误信息。用户也就更容易发现错误了。
+
+. $_GET 变量用于收集来自 method="get" 的表单中的值。
+
+  $_GET 变量
+
+$_GET 变量是一个数组，内容是由 HTTP GET 方法发送的变量名称和值。
+$_GET 变量用于收集来自 method="get" 的表单中的值。从带有 GET 方法的表单发送的信息，对任何人都是可见的（会显示在浏览器的地址栏），并且对发送的信息量也有限制（最多 100 个字符）。
+
+例子
+
+<form action="welcome.php" method="get">
+Name: <input type="text" name="name" />
+Age: <input type="text" name="age" />
+<input type="submit" />
+</form>
+
+当用户点击提交按钮时，发送的 URL 会类似这样：
+
+http://www.w3school.com.cn/welcome.php?name=Peter&age=37
+
+"welcome.php" 文件现在可以通过 $_GET 变量来获取表单数据了（请注意，表单域的名称会自动成为 $_GET 数组中的 ID 键）：
+
+Welcome <?php echo $_GET["name"]; ?>.<br />
+You are <?php echo $_GET["age"]; ?> years old!
+
+为什么使用 $_GET？
+
+注释：在使用 $_GET 变量时，所有的变量名和值都会显示在 URL 中。所以在发送密码或其他敏感信息时，不应该使用这个方法。不过，正因为变量显示在 URL 中，因此可以在收藏夹中收藏该页面。在某些情况下，这是很有用的。
+
+注释：HTTP GET 方法不适合大型的变量值；值是不能超过 100 个字符的。
+
+------------------------------------------------------
+
+$_REQUEST 变量
+
+PHP 的 $_REQUEST 变量包含了 $_GET, $_POST 以及 $_COOKIE 的内容。
+PHP 的 $_REQUEST 变量可用来取得通过 GET 和 POST 方法发送的表单数据的结果。
+例子
+Welcome <?php echo $_REQUEST["name"]; ?>.<br />
+You are <?php echo $_REQUEST["age"]; ?> years old!
+
+=========================================
+
+$_POST 变量用于收集来自 method="post" 的表单中的值。
+
+
+$_POST 变量
+
+$_POST 变量是一个数组，内容是由 HTTP POST 方法发送的变量名称和值。
+
+$_POST 变量用于收集来自 method="post" 的表单中的值。从带有 POST 方法的表单发送的信息，对任何人都是不可见的（不会显示在浏览器的地址栏），并且对发送信息的量也没有限制。
+
+例子
+
+<form action="welcome.php" method="post">
+Enter your name: <input type="text" name="name" />
+Enter your age: <input type="text" name="age" />
+<input type="submit" />
+</form>
+
+当用户点击提交按钮，URL 不会含有任何表单数据，看上去类似这样：
+
+http://www.w3school.com.cn/welcome.php
+
+"welcome.php" 文件现在可以通过 $_POST 变量来获取表单数据了（请注意，表单域的名称会自动成为 $_POST 数组中的 ID 键）：
+
+Welcome <?php echo $_POST["name"]; ?>.<br />
+You are <?php echo $_POST["age"]; ?> years old!
+
+为什么使用 $_POST？
+
+通过 HTTP POST 发送的变量不会显示在 URL 中。
+
+变量没有长度限制。
+
+不过，由于变量不显示在 URL 中，所有无法把页面加入书签。
+
+$_REQUEST 变量
+PHP 的 $_REQUEST 变量包含了 $_GET, $_POST 以及 $_COOKIE 的内容。
+PHP 的 $_REQUEST 变量可用来取得通过 GET 和 POST 方法发送的表单数据的结果。
+
+例子
+
+Welcome <?php echo $_REQUEST["name"]; ?>.<br />
+You are <?php echo $_REQUEST["age"]; ?> years old!
+
+. PHP Date() 函数
+
+  可以把时间戳格式化为可读性更好的日期和时间.
+
+  date( format, timestamp )
+
+  * timestamp 是可选的.
+
+  添加时间戳:
+
+  mktime()
+
+  语法
+
+      mktime(hour,minute,second,month,day,year,is_dst)
+
+. 服务器端引用 (SSI) 用于创建可在多个页面重复使用的函数、页眉、页脚或元素。
+
+  服务器端引用（Server Side Includes）
+
+  通过 include() 或 require() 函数，您可以在服务器执行 PHP 文件之前在该文件中插入一个文件的内容。除了它们处理错误的方式不同之外，这两个函数在其他方面都是相同的。include() 函数会生成一个警告（但是脚本会继续执行），而 require() 函数会生成一个致命错误（fatal error）（在错误发生后脚本会停止执行）。
+
+这两个函数用于创建可在多个页面重复使用的函数、页眉、页脚或元素。
+
+这会为开发者节省大量的时间。这意味着您可以创建供所有网页引用的标准页眉或菜单文件。当页眉需要更新时，您只更新一个包含文件就可以了，或者当您向网站添加一张新页面时，仅仅需要修改一下菜单文件（而不是更新所有网页中的链接）。
+
+include() 函数
+
+include() 函数可获得指定文件中的所有文本，并把文本拷贝到使用 include 函数的文件中。
+
+例子 1
+
+假设您拥有一个标准的页眉文件，名为 "header.php"。如需在页面中引用这个页眉文件，请使用 include() 函数，就像这样：
+
+<html>
+<body>
+
+<?php include("header.php"); ?>
+
+<h1>Welcome to my home page</h1>
+
+<p>Some text</p>
+
+</body>
+</html>
+
+例子 2
+
+现在，假设我们有一个在所有页面上使用的标准菜单文件。请看下面这个 "menu.php"：
+
+<html>
+<body>
+
+<a href="http://www.w3school.com.cn/default.php">Home</a> |
+<a href="http://www.w3school.com.cn/about.php">About Us</a> | 
+<a href="http://www.w3school.com.cn/contact.php">Contact Us</a>
+
+三个文件，"default.php"、"about.php" 以及 "contact.php" 都引用了 "menu.php" 文件。这是 "default.php" 中的代码：
+
+<?php include("menu.php"); ?>
+
+<h1>Welcome to my home page</h1>
+
+<p>Some text</p>
+
+</body>
+</html>
+
+如果您在浏览器中查看 "default.php" 的源代码，应该类似这样：
+
+<html>
+<body>
+
+<a href="default.php">Home</a> |
+<a href="about.php">About Us</a> | 
+<a href="contact.php">Contact Us</a>
+
+<h1>Welcome to my home page</h1>
+<p>Some text</p>
+
+</body>
+</html>
+
+同时，当然，我们也将用相同的方法处理 "about.php" 和 "contact.php"。通过使用引用文件，在您需要重命名链接、更改链接顺序或向站点添加另一张网页时，只要简单地更新 "menu.php" 文件中的文本即可。
+
+==============================
+
+require() 函数
+
+require() 函数与 include() 相同，不同的是它对错误的处理方式。
+
+include() 函数会生成一个警告（但是脚本会继续执行），而 require() 函数会生成一个致命错误（fatal error）（在错误发生后脚本会停止执行）。
+
+如果在您通过 include() 引用文件时发生了错误，会得到类似下面这样的错误消息：
+
+PHP 代码：
+
+<html>
+<body>
+
+<?php
+include("wrongFile.php");
+echo "Hello World!";
+?>
+
+</body>
+</html>
+
+错误消息：
+Warning: include(wrongFile.php) [function.include]:
+failed to open stream:
+No such file or directory in C:\home\website\test.php on line 5
+
+Warning: include() [function.include]:
+Failed opening 'wrongFile.php' for inclusion
+(include_path='.;C:\php5\pear')
+in C:\home\website\test.php on line 5
+
+Hello World!
+
+请注意，echo 语句依然被执行了！这是因为警告不会中止脚本的执行。
+
+现在，让我们使用 require() 函数运行相同的例子。
+
+PHP 代码：
+
+<html>
+<body>
+
+<?php
+require("wrongFile.php");
+echo "Hello World!";
+?>
+
+</body>
+</html>
+
+错误消息：
+
+Warning: require(wrongFile.php) [function.require]:
+failed to open stream:
+No such file or directory in C:\home\website\test.php on line 5
+
+Fatal error: require() [function.require]:
+Failed opening required 'wrongFile.php'
+(include_path='.;C:\php5\pear')
+in C:\home\website\test.php on line 5
+
+由于在致命错误发生后终止了脚本的执行，因此 echo 语句不会执行。
+
+正因为在文件不存在或被重命名后脚本不会继续执行，因此我们推荐使用 require() 而不是 include()。
+
+. PHP 全局变量 - 超全局变量
+
+PHP 中的许多预定义变量都是“超全局的”，这意味着它们在一个脚本的全部作用域中都可用。在函数或方法中无需执行 global $variable; 就可以访问它们。
+
+这些超全局变量是：
+
+    $GLOBALS
+    $_SERVER
+    $_REQUEST
+    $_POST
+    $_GET
+    $_FILES
+    $_ENV
+    $_COOKIE
+    $_SESSION

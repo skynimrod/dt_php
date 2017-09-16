@@ -1,0 +1,5 @@
+. bootstrap.php 文件存放在项目的src目录下面. 实际上是从index.php 分离出来的. 
+
+. http://symfony.com/blog/new-in-symfony-2-6-bootstrap-form-theme
+
+  bootstrap 的配置在 app/config/config.yml

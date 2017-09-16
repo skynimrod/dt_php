@@ -1,0 +1,21 @@
+. PHP 提供了极为人性化的解决方案:
+
+      所有数据库函数都可缺省数据库连接字.  当缺省值,  php 会自动使用最后一个有效连接.
+
+  以下有三种方法.
+
+  1. 把数据库连接写在一个php， 在需要的函数里面include_once， 就可以直接使用了
+
+  2. 写成全局变量, 然后在使用       例如:  global $a;   $a  就是全局变量.
+  
+  3. 写个连接类, 把你的方法也写成类继承连接类也行.
+
+. 参见:
+
+  http://www.cnblogs.com/Seekr/archive/2012/06/25/2560631.html
+
+  1. 首先,需要创建一个bundle
+
+     $php app/console generate:bundle --namespace=Acme/StoreBundle
+
+

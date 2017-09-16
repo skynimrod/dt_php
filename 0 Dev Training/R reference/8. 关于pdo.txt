@@ -1,0 +1,23 @@
+PDO扩展为PHP访问数据库定义了一个轻量级的、一致性的接口，它提供了一个数据访问抽象层，这样，无论使用什么数据库，都可以通过一致的函数执行查询和获取数据。
+ 
+
+在一些PHP管理系统需要开启PDO和PDO_MySQL扩展，方法很简单：
+
+1、找到php.ini文件
+
+2、打开后，搜索 extension=php_pdo.dll 和 extension=php_pdo_mysql.dll ，去掉前面“;”的注释。
+
+最终这两行配置内容如下：
+
+extension=php_pdo.dll
+extension=php_pdo_mysql.dll
+重新启动apache或者iis后，在phpinfo函数中查看，是否开启。
+
+. 上面的方法不行.  继续
+
+  好像是需要把 php_pdo_mysql.dll 拷贝到 system32下面??
+. 参见:
+
+       http://php.net/manual/en/book.pdo.php
+
+. 奇怪,  php_pdo_mysql.dll 拷贝到 system32下后仍然提示找不到, 必须要拷贝到c:\php\ext目录下面才行...

@@ -1,0 +1,187 @@
+. 查看可用的命令列表.
+
+ F:\F_3_test\2_PHP\adamstest>php bin/console doctrine -help
+
+
+  [Symfony\Component\Console\Exception\CommandNotFoundException]
+  Command "doctrine" is not defined.
+  Did you mean one of these?
+      doctrine:cache:clear-collection-region
+      doctrine:ensure-production-settings
+      doctrine:cache:clear-entity-region
+      doctrine:cache:clear-query-region
+      doctrine:cache:clear-metadata
+      doctrine:cache:clear-result
+      doctrine:generate:entities
+      doctrine:cache:clear-query
+      doctrine:database:create
+      doctrine:generate:entity
+      doctrine:schema:validate
+      doctrine:database:import
+      doctrine:mapping:convert
+      doctrine:mapping:import
+      doctrine:database:drop
+      doctrine:schema:create
+      doctrine:schema:update
+      doctrine:generate:crud
+      doctrine:generate:form
+      doctrine:mapping:info
+      doctrine:schema:drop
+      doctrine:query:dql
+      doctrine:query:sql
+      generate:doctrine:crud
+      generate:doctrine:form
+      generate:doctrine:entity
+      generate:doctrine:entities
+
+
+
+F:\F_3_test\2_PHP\adamstest>
+
+   ---------------------------------------------
+
+F:\F_3_test\2_PHP\adamstest>php vendor/bin/doctrine:list
+Could not open input file: vendor/bin/doctrine:list
+
+F:\F_3_test\2_PHP\adamstest>php bin/console doctrine:list
+
+
+  [Symfony\Component\Console\Exception\CommandNotFoundException]
+  Command "doctrine:list" is not defined.
+  Did you mean one of these?
+      doctrine:database:create
+      doctrine:cache:clear-entity-region
+      doctrine:generate:entity
+      doctrine:generate:crud
+      doctrine:schema:validate
+      doctrine:schema:update
+      doctrine:query:sql
+      doctrine:query:dql
+      doctrine:cache:clear-query-region
+      doctrine:mapping:info
+      doctrine:database:import
+      doctrine:ensure-production-settings
+      doctrine:database:drop
+      doctrine:schema:drop
+      doctrine:schema:create
+      doctrine:mapping:convert
+      doctrine:cache:clear-collection-region
+      doctrine:cache:clear-result
+      doctrine:cache:clear-query
+      doctrine:cache:clear-metadata
+      doctrine:mapping:import
+      doctrine:generate:entities
+      doctrine:generate:form
+
+
+
+F:\F_3_test\2_PHP\adamstest>   
+
+. http://docs.doctrine-project.org/en/latest/reference/tools.html
+
+  http://www.111cn.net/phper/332/85987.htm
+
+. 1. doctrine 的配置文件
+
+     所有的Doctrine console 命令要求可以访问 EntityManager 和 DBAL 连接. 
+
+     当前目录下有个cli-config.php 文件, 包含相关配置. 
+
+. 2. 配置数据库
+
+     在你真正开始之前，你需要配置你的数据库链接信息。按照惯例，这些信息通常配置在app/config/parameters.yml文件中：
+
+
+# app/config/parameters.yml
+parameters:
+    database_driver:    pdo_mysql
+    database_host:      localhost
+    database_name:      test_project
+    database_user:      root
+    database_password:  password
+ 
+# ...
+ 将配置信息定义到parameters.yml仅仅是一个惯例。定义在该文件中的配置信息将会被主配置文件在安装Doctrine时引用。
+
+
+# app/config/config.yml
+doctrine:
+    dbal:
+        driver:   "%database_driver%"
+        host:     "%database_host%"
+        dbname:   "%database_name%"
+        user:     "%database_user%"
+        password: "%database_password%"
+通过把数据库信息分离到一个特定的文件中，你可以很容易的为每个服务器保存不同的版本。你也可以在项目外轻松存储数据库配置（一些敏感信息），就像apache配置一样。更多信息请参阅How to Set external Parameters in the Service Container.
+现在Doctrine知道你的数据库配置了，你可以用它来创建一个数据库了。
+
+. 3. 然后创建数据库 
+
+F:\F_3_test\2_PHP\adamstest>php bin/console doctrine:database:create
+Created database `smms_db` for connection named default
+
+. 4. 创建数据库表
+
+F:\F_3_test\2_PHP\adamstest>php bin/console doctrine:generate:entity
+
+
+  Welcome to the Doctrine2 entity generator
+
+
+
+This command helps you generate Doctrine2 entities.
+
+First, you need to give the entity name you want to generate.
+You must use the shortcut notation like AcmeBlogBundle:Post.
+
+The Entity shortcut name: AcmeDemoBundle:User
+
+Determine the format to use for the mapping information.
+
+Configuration format (yml, xml, php, or annotation) [annotation]: yml
+
+Instead of starting with a blank entity, you can add some fields now.
+Note that the primary key will be added automatically (named id).
+
+Available types: array, simple_array, json_array, object,
+boolean, integer, smallint, bigint, string, text, datetime, datetimetz,
+date, time, decimal, float, binary, blob, guid.
+
+New field name (press <return> to stop adding fields): userid
+Field type [string]:
+Field length [255]:
+Is nullable [false]:
+Unique [false]:
+
+New field name (press <return> to stop adding fields): username
+Field type [string]:
+Field length [255]:
+Is nullable [false]:
+Unique [false]:
+
+New field name (press <return> to stop adding fields): age
+Field type [string]: integer
+Is nullable [false]:
+Unique [false]:
+
+New field name (press <return> to stop adding fields):
+
+
+  Entity generation
+
+
+> Generating entity class F:\F_3_test\2_PHP\adamstest\src\Acme\DemoBundle\Entity
+\User.php: OK!
+> Generating repository class F:\F_3_test\2_PHP\adamstest\src\Acme\DemoBundle\Re
+pository\UserRepository.php: OK!
+> Generating mapping file F:\F_3_test\2_PHP\adamstest\src\Acme\DemoBundle\Resour
+ces\config\doctrine\User.orm.yml: OK!
+
+
+  Everything is OK! Now get to work :).
+
+F:\F_3_test\2_PHP\adamstest>
+
+----------------------------------------------------------
+
+这时候创建的仅仅是php文件, 对应的orm对象, 并没有在数据库mysql中实际常见对应的数据库表. 需要进行持久化才可以实际对数据进行操作. 

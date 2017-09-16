@@ -1,0 +1,21 @@
+<?php
+
+$path = “post/”; //指定存储路径
+
+$filename = “S”.date(“YmdHis”).”.dat”; //由当前时间产生文件名
+
+$fp = fopen($path.$filename,”w”); //以写方式创建并打开文件
+
+fwrite($fp, "$_POST["title"]".”\n”); //写入作者
+
+//fwrite($fp, $_POST["author"].”\n”); //写入作者
+
+//fwrite($fp, $_POST["content"].”\n”); //写入内容
+
+fclose($fp);
+
+echo “您在www.phpdo.net的留言发表成功”; //提示留言发表成功
+
+echo “<a href=’Index.php’>返回首页</a>”;
+
+?>

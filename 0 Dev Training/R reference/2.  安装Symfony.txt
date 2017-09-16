@@ -1,0 +1,349 @@
+. Windows 7 环境
+
+   官网的指导是:  (http://symfony.com/download)
+
+    c:\> php -r "file_put_contents('symfony', file_get_contents('https://symfony.com/installer'));" 
+
+   但是: 在命令行下运行上面的语句时,  提示https 无法访问, 于是直接在浏览器访问 https://symfony.com/installer, 获得symfony.phar， 然后运行下面的命令即可。
+
+
+   php -r "file_put_contents('symfony', file_get_contents('F:\\F_3_test\\2_PHP\\symfony.phar'));"
+
+. 将下载的symfony 文件拷贝到 项目目录下, 然后执行: php symfony
+
+F:\F_3_test\2_PHP>php symfony
+
+ Symfony Installer (1.5.8)
+ =========================
+
+ This is the official installer to start new projects based on the
+ Symfony full-stack framework.
+
+ To create a new project called blog in the current directory using
+ the latest stable version of Symfony, execute the following command:
+
+   symfony new blog
+
+ Create a project based on the Symfony Long Term Support version (LTS):
+
+   symfony new blog lts
+
+ Create a project based on a specific Symfony branch:
+
+   symfony new blog 2.8 or symfony new blog 3.0
+
+ Create a project based on a specific Symfony version:
+
+   symfony new blog 2.8.1 or symfony new blog 3.0.1
+
+ Create a demo application to learn how a Symfony application works:
+
+   symfony demo
+
+ Updating the Symfony Installer
+ ------------------------------
+
+ New versions of the Symfony Installer are released regularly. To update your
+ installer version, execute the following command:
+
+   symfony self-update
+ 
+. 但是通过symfony installer 创建blog 的时候，出现了下面的错误
+
+F:\F_3_test\2_PHP>php symfony new blog
+
+
+
+  [GuzzleHttp\Exception\RequestException]
+  Error creating resource: [message] fopen(): Unable to find the wrapper "htt
+  ps" - did you forget to enable it when you configured PHP?
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 406
+  [message] fopen(https://get.symfony.com/symfony.version): failed to open st
+  ream: Invalid argument
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 406
+  [message] Undefined variable: http_response_header
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 407
+
+
+
+
+
+
+  [GuzzleHttp\Ring\Exception\RingException]
+  Error creating resource: [message] fopen(): Unable to find the wrapper "htt
+  ps" - did you forget to enable it when you configured PHP?
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 406
+  [message] fopen(https://get.symfony.com/symfony.version): failed to open st
+  ream: Invalid argument
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 406
+  [message] Undefined variable: http_response_header
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 407
+
+
+
+new <directory> [<version>]
+
+
+
+F:\F_3_test\2_PHP>
+
+看上面的错误信息, 本质上也是访问不了https， 与之前 symfony installer  错误类似. 
+
+在firefox浏览器, 直接访问  https://get.symfony.com/symfony.version， 可以下载5字节的文件 symfony.version， 但是命令行就不能直接访问？？？
+
+后来在安装composer 的时候, 碰到一个安装失败提示:
+
+The openssl extension is missing, which means that secure HTTPS transfers are impossible.
+If possible you should enable it or recompile php with --with-openssl
+
+看来主要是openssl 没有安装的原因, 造成无法访问https。。。。
+
+.  PHP 开启openssl 的方法, 
+
+   http://www.52jscn.com/web/2013/05/4592.shtml
+
+   大多数情况下openssl是没有开启的，要想启用需要进行下简单的设置：
+
+   windows下开启方法：
+
+      1： 首先检查php.ini中；extension=php_openssl.dll是否存在， 如果存在的话去掉前面的注释符‘；’， 如果不存在这行，那么添加extension=php_openssl.dll。
+
+      2： 讲php文件夹下的： php_openssl.dll， ssleay32.dll， libeay32.dll 3个文件拷贝到 WINDOWS\system32\  文件夹下。
+
+      3： 重启apache或者iis
+
+    至此，openssl功能就开启了。  需要注意的是 php_openssl.dll 在php所在目录的ext 子目录下面.
+
+   在命令行下面运行: php symfony new blog 还是出现https 不能访问的问题.
+  
+        https://www.openssl.org/source/
+      
+        http://blog.csdn.net/pony_maggie/article/details/8588888      Windows 下openssl安装与配置 
+
+   既然是openssl的问题, 干脆直接到 openssl 网站下载openssl , 安装一个openssl算了。。
+
+      编译openssl 需要 perl。。。 
+
+      在解压的openssl 目录下, 运行 perl Configure VC-WIN64A
+
+F:\F_4_Setup\0.DevSoftware\O_Other\openssl-1.1.0a\openssl-1.1.0a>perl Configure
+VC-WIN64A
+Configuring OpenSSL version 1.1.0a (0x0x1010001fL)
+    no-asan         [default]  OPENSSL_NO_ASAN
+    no-crypto-mdebug [default]  OPENSSL_NO_CRYPTO_MDEBUG
+    no-crypto-mdebug-backtrace [default]  OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
+    no-ec_nistp_64_gcc_128 [default]  OPENSSL_NO_EC_NISTP_64_GCC_128
+    no-egd          [default]  OPENSSL_NO_EGD
+    no-fuzz-afl     [default]  OPENSSL_NO_FUZZ_AFL
+    no-fuzz-libfuzzer [default]  OPENSSL_NO_FUZZ_LIBFUZZER
+    no-heartbeats   [default]  OPENSSL_NO_HEARTBEATS
+    no-md2          [default]  OPENSSL_NO_MD2 (skip dir)
+    no-msan         [default]  OPENSSL_NO_MSAN
+    no-rc5          [default]  OPENSSL_NO_RC5 (skip dir)
+    no-sctp         [default]  OPENSSL_NO_SCTP
+    no-ssl-trace    [default]  OPENSSL_NO_SSL_TRACE
+    no-ssl3         [default]  OPENSSL_NO_SSL3
+    no-ssl3-method  [default]  OPENSSL_NO_SSL3_METHOD
+    no-ubsan        [default]  OPENSSL_NO_UBSAN
+    no-unit-test    [default]  OPENSSL_NO_UNIT_TEST
+    no-weak-ssl-ciphers [default]  OPENSSL_NO_WEAK_SSL_CIPHERS
+    no-zlib         [default]
+    no-zlib-dynamic [default]
+Configuring for VC-WIN64A
+NASM not found - please read INSTALL and NOTES.WIN for further details
+
+F:\F_4_Setup\0.DevSoftware\O_Other\openssl-1.1.0a\openssl-1.1.0a>
+
+提示缺少NASM...
+
+查看 NOTES.WIN  发现缺少NASM, 可以从 http://www.nasm.us 下载. 
+
+安装NASM 后把NASM 目录添加到 Path 中. 然后再执行下面命令
+
+F:\F_4_Setup\0.DevSoftware\O_Other\openssl-1.1.0a\openssl-1.1.0a>perl configure
+VC-WIN64A
+Configuring OpenSSL version 1.1.0a (0x0x1010001fL)
+    no-asan         [default]  OPENSSL_NO_ASAN
+    no-crypto-mdebug [default]  OPENSSL_NO_CRYPTO_MDEBUG
+    no-crypto-mdebug-backtrace [default]  OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
+    no-ec_nistp_64_gcc_128 [default]  OPENSSL_NO_EC_NISTP_64_GCC_128
+    no-egd          [default]  OPENSSL_NO_EGD
+    no-fuzz-afl     [default]  OPENSSL_NO_FUZZ_AFL
+    no-fuzz-libfuzzer [default]  OPENSSL_NO_FUZZ_LIBFUZZER
+    no-heartbeats   [default]  OPENSSL_NO_HEARTBEATS
+    no-md2          [default]  OPENSSL_NO_MD2 (skip dir)
+    no-msan         [default]  OPENSSL_NO_MSAN
+    no-rc5          [default]  OPENSSL_NO_RC5 (skip dir)
+    no-sctp         [default]  OPENSSL_NO_SCTP
+    no-ssl-trace    [default]  OPENSSL_NO_SSL_TRACE
+    no-ssl3         [default]  OPENSSL_NO_SSL3
+    no-ssl3-method  [default]  OPENSSL_NO_SSL3_METHOD
+    no-ubsan        [default]  OPENSSL_NO_UBSAN
+    no-unit-test    [default]  OPENSSL_NO_UNIT_TEST
+    no-weak-ssl-ciphers [default]  OPENSSL_NO_WEAK_SSL_CIPHERS
+    no-zlib         [default]
+    no-zlib-dynamic [default]
+Configuring for VC-WIN64A
+CC            =cl
+CFLAG         =-W3 -wd4090 -Gs0 -GF -Gy -nologo -DOPENSSL_SYS_WIN32 -DWIN32_LEAN
+_AND_MEAN -DL_ENDIAN -D_CRT_SECURE_NO_DEPRECATE -DUNICODE -D_UNICODE /MD /O2
+SHARED_CFLAG  =
+DEFINES       =OPENSSL_USE_APPLINK DSO_WIN32 NDEBUG OPENSSL_THREADS OPENSSL_NO_S
+TATIC_ENGINE OPENSSL_PIC OPENSSL_IA32_SSE2 OPENSSL_BN_ASM_MONT OPENSSL_BN_ASM_MO
+NT5 OPENSSL_BN_ASM_GF2m SHA1_ASM SHA256_ASM SHA512_ASM RC4_ASM MD5_ASM AES_ASM V
+PAES_ASM BSAES_ASM GHASH_ASM ECP_NISTZ256_ASM POLY1305_ASM
+LFLAG         =/nologo /debug
+PLIB_LFLAG    =
+EX_LIBS       =ws2_32.lib gdi32.lib advapi32.lib crypt32.lib user32.lib
+APPS_OBJ      =win32_init.o ../ms/applink.o
+CPUID_OBJ     =x86_64cpuid.o
+UPLINK_OBJ    =../ms/uplink.o uplink-x86_64.o
+BN_ASM        =bn_asm.o x86_64-mont.o x86_64-mont5.o x86_64-gf2m.o rsaz_exp.o rs
+az-x86_64.o rsaz-avx2.o
+EC_ASM        =ecp_nistz256.o ecp_nistz256-x86_64.o
+DES_ENC       =des_enc.o fcrypt_b.o
+AES_ENC       =aes-x86_64.o vpaes-x86_64.o bsaes-x86_64.o aesni-x86_64.o aesni-s
+ha1-x86_64.o aesni-sha256-x86_64.o aesni-mb-x86_64.o
+BF_ENC        =bf_enc.o
+CAST_ENC      =c_enc.o
+RC4_ENC       =rc4-x86_64.o rc4-md5-x86_64.o
+RC5_ENC       =rc5_enc.o
+MD5_OBJ_ASM   =md5-x86_64.o
+SHA1_OBJ_ASM  =sha1-x86_64.o sha256-x86_64.o sha512-x86_64.o sha1-mb-x86_64.o sh
+a256-mb-x86_64.o
+RMD160_OBJ_ASM=
+CMLL_ENC      =cmll-x86_64.o cmll_misc.o
+MODES_OBJ     =ghash-x86_64.o aesni-gcm-x86_64.o
+PADLOCK_OBJ   =e_padlock-x86_64.o
+CHACHA_ENC    =chacha-x86_64.o
+POLY1305_OBJ  =poly1305-x86_64.o
+BLAKE2_OBJ    =
+PROCESSOR     =
+RANLIB        =ranlib
+ARFLAGS       =/nologo
+PERL          =D:\D_0_DevEnv\Strawberry\perl\bin\perl.exe
+
+SIXTY_FOUR_BIT mode
+
+Configured for VC-WIN64A.
+
+F:\F_4_Setup\0.DevSoftware\O_Other\openssl-1.1.0a\openssl-1.1.0a>
+
+# Openssl 安装成功. 需要注意的是VC-WIN64A 是大小写敏感的, 如果写小写的可能会提示对应的OS不存在. 
+
+-------------------------------------------------------------------------------------
+
+.  然后继续用Symfony 创建new blog
+
+F:\F_3_test\2_PHP>php symfony new blog
+PHP Warning:  PHP Startup: Unable to load dynamic library 'C:\php\ext\php_openss
+l.dll' - 找不到指定的模块。
+ in Unknown on line 0
+
+Warning: PHP Startup: Unable to load dynamic library 'C:\php\ext\php_openssl.dll
+' - 找不到指定的模块。
+ in Unknown on line 0
+
+
+
+  [GuzzleHttp\Exception\RequestException]
+  Error creating resource: [message] fopen(): Unable to find the wrapper "htt
+  ps" - did you forget to enable it when you configured PHP?
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 406
+  [message] fopen(https://get.symfony.com/symfony.version): failed to open st
+  ream: Invalid argument
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 406
+  [message] Undefined variable: http_response_header
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 407
+
+
+
+
+
+
+  [GuzzleHttp\Ring\Exception\RingException]
+  Error creating resource: [message] fopen(): Unable to find the wrapper "htt
+  ps" - did you forget to enable it when you configured PHP?
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 406
+  [message] fopen(https://get.symfony.com/symfony.version): failed to open st
+  ream: Invalid argument
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 406
+  [message] Undefined variable: http_response_header
+  [file] phar://F:/F_3_test/2_PHP/symfony/vendor/guzzlehttp/ringphp/src/Clien
+  t/StreamHandler.php
+  [line] 407
+
+
+
+new <directory> [<version>]
+
+
+
+F:\F_3_test\2_PHP>
+
+-----------------------------
+
+  重新启动机器后,再执行 php symfony new blog 就成功了
+
+  download symfony ....
+
+    略
+
+   99%
+    5.14 MB/5.15 MB ===========================================================>
+   99%
+    5.15 MB/5.15 MB ===========================================================>
+   99%
+    5.15 MB/5.15 MB ============================================================
+  100%
+
+ Preparing project...
+
+ OK  Symfony 3.1.4 was successfully installed. Now you can:
+
+    * Change your current directory to F:\F_3_test\2_PHP\blog
+
+    * Configure your application in app/config/parameters.yml file.
+
+    * Run your application:
+        1. Execute the php bin/console server:run command.
+        2. Browse to the http://localhost:8000 URL.
+
+    * Read the documentation at http://symfony.com/doc
+
+
+F:\F_3_test\2_PHP>
+
+进入blog 子目录
+
+然后运行: 
+
+F:\F_3_test\2_PHP\blog>php bin/console server:run
+
+ [OK] Server running on http://127.0.0.1:8000
+
+ // Quit the server with CONTROL-C.
+
+在浏览器访问: http://127.0.0.1:8000

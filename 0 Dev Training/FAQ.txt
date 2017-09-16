@@ -1,0 +1,21 @@
+. 1. PHP  中文乱码问题
+
+     是PHP 开发中的常见问题. PHP 中文乱码有时发生在网页本身, 有些产生在于 MYSQL 交互的过程中, 有时与操作系统有关.
+
+     a. 首先是PHP 网页的编码
+
+       (1) PHP 文件的编码与网页的编码应匹配
+
+           i. 如果要使用 gb2312 编码, 那么 php 要输出头: header("Content-Type:text/html;charset=gb2312"), 静态页面添加
+
+. 2. 安装软件出现缺少vcruntime140dll的解决方法
+
+    参见:
+
+         http://jingyan.baidu.com/article/49711c617e4000fa441b7c92.html
+
+        首先，下载vcruntime140.dll
+
+链接: http://pan.baidu.com/s/1mi1wy3A 密码: r7n3
+
+下载之后，解压文件，把32位的vcruntime140.dll复制到：C:\Windows\SysWOW64里，运行regsvr32 %windir%\SysWOW64\vcruntime140.dll /s，说明vrcuntime140.dll已经注册成功了。

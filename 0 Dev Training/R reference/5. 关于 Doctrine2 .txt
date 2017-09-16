@@ -1,0 +1,532 @@
+参见:
+
+     http://www.cnblogs.com/yjf512/p/3375614.html
+
+     http://www.doctrine-project.org/         官网
+
+. Doctrine是一个ORM（Object-relational mapper），提供php数据库和PHP对象的映射。他和其他的ORM一样都是为了保证持久层和逻辑层的分类而存在的。
+
+. 可以使用composer 安装.   关键文件:composer.json.  这个文件在项目所在目录下.
+
+  在composer.json 中添加下面的内容,就会通过composer 自动安装doctrine
+
+{
+    "require": {
+        "doctrine/orm": "2.4.*",
+        "symfony/yaml": "2.*"
+    },
+    "autoload": {
+        "psr-0": {"": "src/"}
+    }
+}
+
+  用composer 依赖管理工具来安装 Doctrine
+
+  composer install
+  
+  会安装以下包 到vendor 目录中.
+
+      Doctrine Common,  Doctrine DBAL,  Doctrine ORM, Symfony YAML, Symfony Console 
+
+. 1. Entity
+
+     Entity是PHP的一个对象
+
+Entity对应的表需要有主键
+
+Entity中不能含有final属性或者final方法
+
+. 2. 教程：
+
+http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/tutorials/getting-started.html
+
+. 3. doctrine是可以根据Entity代码来生成数据表的
+
+    在src文件夹（config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), isDevMode);） 中写出Entity代码
+
+    然后使用
+	
+     php vendor/bin/doctrine orm:schema-tool:create
+
+   工具来生成数据表
+
+. 4. 用下面的命令更新数据表
+	
+  $ php vendor/bin/doctrine orm:schema-tool:update --force --dump-sql
+
+当然在bootstrap中需要设置连接mysql数据库
+	
+// database configuration parameters
+$conn = array(
+    'driver' => 'pdo_mysql',
+    'host' => 'localhost',
+    'user' => 'yjf',
+    'password' => 'yjf',
+    'dbname' => 'yjf',
+    'path' => __DIR__ . '/db.sql',
+);
+ 
+// obtaining the entity manager
+$entityManager = EntityManager::create($conn, $config);
+
+其中Entity除了可以使用代码来进行设置外，也可以使用xml和yml文件进行设置。
+
+它的命令行读取的是cli-config.php这个配置数据，所以在使用doctrine的命令行之前，需要先编写这个配置文件。
+
+.5 使用EntityManager能对Entity进行增删改查的操作
+	
+增加：
+$product = new Product();
+$product->setName($newProductName);
+ 
+$entityManager->persist($product);
+$entityManager->flush();
+ 
+查询：
+$entityManager->find('Product', $id)
+ 
+更新：
+$product = $entityManager->find('Product', $id);
+$product->setName($newName);
+$entityManager->flush();
+ 
+删除：
+$product = $entityManager->find('Product', $id);
+$product->remove();
+$entityManager->flush();
+
+
+. 6. 如何调试
+
+doctrine由于EntityManager结构复杂，所以使用var_dump()返回的数据及其庞大，并且可读性差。应该使用
+
+Doctrine\Common\Util\Debug::dump()来打印信息。
+
+. 7. 表之间的关联如何体现在Entity上
+
+首先明确表和表的关联有几种：
+一对一
+一对多
+多对一
+多对多
+
+比如教程中举的例子，bug系统
+
+bug表和user表分别存储bug信息和user信息
+
+每个bug有个工程师engineer的属性，代表这个bug是由哪个工程师开发的，那么就有可能有多个bug是由一个工程师开发的。所以bug表对于user表就是多对一的关系。user表对于bug表就是一对多的关系。
+
+bug表和product表分别存储bug信息和出bug的产品信息
+
+一个bug可能有多个产品一起出现问题导致的，而一个产品也有可能有多个bug，所以bug表和product表就是多对多的关系。
+
+一对一的关系就比较简单了。
+
+. 8. 一对多如何设置
+
+这里主要说下一对多和多对一的时候，在bug的Entity中和user的Entity中应该对应这样设置：
+
+#bug.php
+    /**
+     * @ManyToOne(targetEntity="User", inversedBy="assignedBugs")
+     **/
+    protected $engineer;
+ 
+#user.php
+    /**
+     * @OneToMany(targetEntity="Bug", mappedBy="engineer")
+     * @var Bug[]
+     **/
+    protected $assignedBugs = null;
+
+这里ManyToOne和OneToMany是互相对应的，inversedBy和mappedBy也是互相对应的。
+
+这样如果使用doctrine自动生成表结构：
+
+mysql> show create table users;
+ 
+| users | CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci |
+ 
+ 
+mysql> show create table bugs;
+ 
+| bugs  | CREATE TABLE `bugs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `engineer_id` int(11) DEFAULT NULL,
+  `reporter_id` int(11) DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `created` datetime NOT NULL,
+  `status` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_1E197C9F8D8CDF1` (`engineer_id`),
+  KEY `IDX_1E197C9E1CFE6F5` (`reporter_id`),
+  CONSTRAINT `FK_1E197C9E1CFE6F5` FOREIGN KEY (`reporter_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `FK_1E197C9F8D8CDF1` FOREIGN KEY (`engineer_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci |
+
+可以看出的是bugs生成了engineer_id属性，然后自动生成外键的索引。
+
+更多的entity和mysql的对应关系是：
+
+http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/association-mapping.html
+
+. 9. 如何使用DQL进行查询
+
+对，你没有看错，这里是DQL而不是SQL。DQL是毛语言呢？Document Query Language，意思就是文档化的sql语句，为什么sql语句需要文档化呢？sql语句更倾向于表结构实现，所以在写sql语句的时候头脑中需要具现化的是表结构，而ORM的目的就是不需要开发者关注表结构，所以需要一个不基于表结构的查询语句，又能直接翻译成为SQL语句，这就是DQL。DQL可以直接对Entity进行增删改查，而不需要直接对表进行操作。
+
+比如下面的一个例子：
+
+$dql = "SELECT b, e, r FROM Bug b JOIN b.engineer e JOIN b.reporter r ORDER BY b.created DESC";
+
+$query = $entityManager->createQuery($dql);
+$query->setMaxResults(30); 
+
+$bugs=$query->getResult();
+
+看这里的sql中From的就是“Bug”，这个是Entity的类，其实熟悉了sql，dql的查询语法也是一模一样的。
+
+考虑使用dql而不是sql除了和ORM目标一致外，还有一个好处，就是存储层和逻辑层的耦合分开了。比如我的存储层要从mysql换成mongodb，那么逻辑层是什么都不需要动的。
+
+. 10. 使用Repository
+
+到这里就嘀咕，我经常进行的查询是根据字段查询列表啥的，难道每次需要我都拼接dql么？当然不用，doctrine为我们准备了repository的概念，就是查询库，里面封装了各种查询常用的方法。
+
+使用如下：
+
+<?php
+$product = $entityManager->getRepository('Product')
+                         ->findOneBy(array('name' => $productName));
+
+Repository对应的操作有：
+	
+find()
+findAll()
+findBy()
+findOneBy()
+findOneByXXX()
+
+示例：
+	
+<?php// $em instanceof EntityManager
+$user = $em->getRepository('MyProject\Domain\User')->find($id);
+ 
+<?php// $em instanceof EntityManager
+ 
+// All users that are 20 years old
+$users = $em->getRepository('MyProject\Domain\User')->findBy(array('age' => 20));
+ 
+// All users that are 20 years old and have a surname of 'Miller'
+$users = $em->getRepository('MyProject\Domain\User')->findBy(array('age' => 20, 'surname' => 'Miller'));
+ 
+// A single user by its nickname
+$user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('nickname' => 'romanb'));
+ 
+ 
+<?php// A single user by its nickname
+$user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('nickname' => 'romanb'));
+ 
+// A single user by its nickname (__call magic)
+$user = $em->getRepository('MyProject\Domain\User')->findOneByNickname('romanb');
+
+ 
+
+doctrine还允许自己创建Repository，然后只需要在Entity中说明下repositoryClass就可以了。
+
+class UserRepository extends EntityRepository
+{
+    public function getAllAdminUsers()
+    {
+        return $this->_em->createQuery('SELECT u FROM MyDomain\Model\User u WHERE u.status = "admin"')
+                         ->getResult();
+
+. 11. 如何使用原生的sql语句来做查询？
+
+除了dql之外，doctrine也允许使用原生的sql语句来做查询。这篇教程有最详细的说明http://docs.doctrine-project.org/en/latest/reference/native-sql.html。
+
+主要是提供了createNativeQuery的方法
+	
+<?php
+// Equivalent DQL query: "select u from User u where u.name=?1"
+// User owns an association to an Address but the Address is not loaded in the query.
+$rsm = new ResultSetMapping;
+$rsm->addEntityResult('User', 'u');
+$rsm->addFieldResult('u', 'id', 'id');
+$rsm->addFieldResult('u', 'name', 'name');
+$rsm->addMetaResult('u', 'address_id', 'address_id');
+ 
+$query = $this->_em->createNativeQuery('SELECT id, name, address_id FROM users WHERE name = ?', $rsm);
+$query->setParameter(1, 'romanb');
+ 
+$users = $query->getResult();
+
+ 
+
+这里唯一让人不解的就是ResultSetMapping了，ResultSetMapping也是理解原生sql查询的关键。
+
+其实也没什么不解的了，ORM是不允许数据库操作返回的不是Object的，所以ResultSetMapping就是数据库数据和Object的结构映射。
+
+这个Mapping也可以在Entity中进行设置。
+
+. 12. 如何使用QueryBuilder
+
+QueryBuilder是doctrine提供的一种在DQL之上的一层查询操作，它封装了一些api，提供给用户进行组装DQL的。
+
+QueryBuilder的好处就是看起来不用自己字符串拼装查询语句了。
+
+关于QueryBuilder的详细说明可以看这篇文章：http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/query-builder.html
+	
+<?php
+// $qb instanceof QueryBuilder
+$qb = $em->createQueryBuilder();
+ 
+$qb->select('u')
+   ->from('User', 'u')
+   ->where('u.id = ?1')
+   ->orderBy('u.name', 'ASC');
+
+ 
+
+QueryBuilder的接口有：
+	
+<?phpclass QueryBuilder{
+    // Example - $qb->select('u')
+    // Example - $qb->select(array('u', 'p'))
+    // Example - $qb->select($qb->expr()->select('u', 'p'))
+    public function select($select = null);
+ 
+    // Example - $qb->delete('User', 'u')
+    public function delete($delete = null, $alias = null);
+ 
+    // Example - $qb->update('Group', 'g')
+    public function update($update = null, $alias = null);
+ 
+    // Example - $qb->set('u.firstName', $qb->expr()->literal('Arnold'))
+    // Example - $qb->set('u.numChilds', 'u.numChilds + ?1')
+    // Example - $qb->set('u.numChilds', $qb->expr()->sum('u.numChilds', '?1'))
+    public function set($key, $value);
+ 
+    // Example - $qb->from('Phonenumber', 'p')
+    public function from($from, $alias = null);
+ 
+    // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
+    // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1')
+    public function innerJoin($join, $alias = null, $conditionType = null, $condition = null);
+ 
+    // Example - $qb->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, $qb->expr()->eq('p.area_code', 55))
+    // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55')
+    public function leftJoin($join, $alias = null, $conditionType = null, $condition = null);
+ 
+    // NOTE: ->where() overrides all previously set conditions
+    //
+    // Example - $qb->where('u.firstName = ?1', $qb->expr()->eq('u.surname', '?2'))
+    // Example - $qb->where($qb->expr()->andX($qb->expr()->eq('u.firstName', '?1'), $qb->expr()->eq('u.surname', '?2')))
+    // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')
+    public function where($where);
+ 
+    // Example - $qb->andWhere($qb->expr()->orX($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))
+    public function andWhere($where);
+ 
+    // Example - $qb->orWhere($qb->expr()->between('u.id', 1, 10));
+    public function orWhere($where);
+ 
+    // NOTE: -> groupBy() overrides all previously set grouping conditions
+    //
+    // Example - $qb->groupBy('u.id')
+    public function groupBy($groupBy);
+ 
+    // Example - $qb->addGroupBy('g.name')
+    public function addGroupBy($groupBy);
+ 
+    // NOTE: -> having() overrides all previously set having conditions
+    //
+    // Example - $qb->having('u.salary >= ?1')
+    // Example - $qb->having($qb->expr()->gte('u.salary', '?1'))
+    public function having($having);
+ 
+    // Example - $qb->andHaving($qb->expr()->gt($qb->expr()->count('u.numChild'), 0))
+    public function andHaving($having);
+ 
+    // Example - $qb->orHaving($qb->expr()->lte('g.managerLevel', '100'))
+    public function orHaving($having);
+ 
+    // NOTE: -> orderBy() overrides all previously set ordering conditions
+    //
+    // Example - $qb->orderBy('u.surname', 'DESC')
+    public function orderBy($sort, $order = null);
+ 
+    // Example - $qb->addOrderBy('u.firstName')
+    public function addOrderBy($sort, $order = null); // Default $order = 'ASC'}
+
+更多更复杂的查询可以查看上文的链接。
+
+. 13. 查询结果是只能返回对象吗？
+
+当然不只，当你执行query的时候可以试试使用：
+
+$result = $query->getResult();
+$single = $query->getSingleResult();
+$array = $query->getArrayResult();
+$scalar = $query->getScalarResult();
+$singleScalar = $query->getSingleScalarResult();
+
+. 14. 一个项目有几个实现路径：
+1 Code First：先用代码写好Object，然后根据Object生成数据库
+2 Model First：先用工具写好UML，然后根据UML生成数据库和PHP代码
+3 Database First：先写好数据库的schema表，然后生成PHP代码
+
+. 15. 如何做分页操作
+
+分页操作是经常使用到的，doctrine使用了Paginator类来做这个操作
+
+比如：
+	
+<?php
+// list_bugs_array.php
+use Doctrine\ORM\Tools\Pagination\Paginator;
+require_once "bootstrap.php";
+ 
+$dql = "SELECT b, e, r, p FROM Bug b JOIN b.engineer e ".
+       "JOIN b.reporter r JOIN b.products p ORDER BY b.created DESC";
+$query = $entityManager->createQuery($dql)
+               ->setFirstResult(0)
+               ->setMaxResults(1);
+ 
+$paginator = new Paginator($query, $fetchJoinCollection = true);
+ 
+$c = count($paginator);
+echo "count: $c" . "\r\n";
+ 
+$bugs = $query->getArrayResult();
+ 
+foreach ($bugs as $item) {
+     print_r($item);
+}
+exit;
+
+. 16. 如何进行sql和dql的调试
+
+我们不免调试的时候要取出sql和dql语句。我们可以使用
+
+$query->getDQL()
+$query->getSQL()
+
+来获取出实际进行查询的sql语句
+
+. 17. 为什么在增删更新的时候有个flush操作
+
+doctrine在增加，删除，更新的时候并不是直接进行操作，而是将操作存放在每个EntityManager的UnitOfWork。
+
+你可以使用
+
+$entityManager->getUnitOfWork()
+$entityManager->getUnitOfWork()->size()
+$entityManager->getEntityState($entity)
+来控制UnitOfWork
+
+. 18. 如何注入Entity增加，删除，更新操作
+
+doctrine提供了监听Event的功能，比如你要在Persist之前做一个日志处理，你就可以实现一个Listener，其中实现了prePersist方法
+然后把Listener挂载到Entity上
+	
+<?php
+namespace MyProject\Entity;
+ 
+/** @Entity @EntityListeners({"UserListener"}) */
+class User
+{
+    // ....
+}
+
+. 19. 如何实现事务？
+	
+<?php
+// $em instanceof EntityManager
+$em->getConnection()->beginTransaction(); // suspend auto-commit
+try {
+    //... do some work
+    $user = new User;
+    $user->setName('George');
+    $em->persist($user);
+    $em->flush();
+    $em->getConnection()->commit();
+} catch (Exception $e) {
+    $em->getConnection()->rollback();
+    $em->close();
+    throw $e;
+}
+
+. 20. 使用DQL只能进行查询操作吗？
+
+当然不只，我们可以使用execute()来对增删改查的DQL语句进行操作
+	
+<?php
+$q = $em->createQuery('delete from MyProject\Model\Manager m where m.salary > 100000');
+$numDeleted = $q->execute();
+
+. 21. Entity可以设置哪些属性：
+
+参考文章：
+
+http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/annotations-reference.html
+
+. 22. 有哪些Cache机制
+doctrine可以支持APC，Memcache，Xcache，Redis这几种缓存机制
+
+所有这些缓存机制都是基于一个抽象方法，这个抽象方法中有的接口有：
+	
+fetch($id)
+contains($id)
+save($id, $data, $lifeTime=false)
+delete($id)
+
+各自对应的初始化代码：
+
+APC：
+<?php
+$cacheDriver = new \Doctrine\Common\Cache\ApcCache();
+$cacheDriver->save('cache_id', 'my_data');
+ 
+MemCache：
+<?php
+$memcache = new Memcache();
+$memcache->connect('memcache_host', 11211);
+ 
+$cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
+$cacheDriver->setMemcache($memcache);
+$cacheDriver->save('cache_id', 'my_data');
+ 
+Xcache：
+<?php
+$cacheDriver = new \Doctrine\Common\Cache\XcacheCache();
+$cacheDriver->save('cache_id', 'my_data');
+ 
+Redis：
+<?php
+$redis = new Redis();
+$redis->connect('redis_host', 6379);
+ 
+$cacheDriver = new \Doctrine\Common\Cache\RedisCache();
+$cacheDriver->setRedis($redis);
+$cacheDriver->save('cache_id', 'my_data');
+
+还有一个命令clear-cache可以用来进行缓存的增删改查
+
+具体参考文章：http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/caching.html
+
+. 23. doctrine提供的工具有哪些
+
+参考文章：http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/tools.html
+
+也可以使用list来进行查看命令
+
+. 24. 总结
+
+doctrine就是一个很庞大的ORM系统，它可以嵌入到其他框架中，比如symfony，比如Yii等。
+
+ORM的最终目的就是将逻辑层和持久层分离，在这个层面来说，doctrine很好地完成了这个任务。
+
+doctrine已经将你能考虑到的操作都进行封装好了，相信如果熟悉了之后，开发过程应该是会非常快的

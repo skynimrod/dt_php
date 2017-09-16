@@ -1,0 +1,55 @@
+参见:
+
+     http://www.phpcomposer.com/   非常好的国内介绍、下载、安装使用Composer 的网站. 有国内的镜像.
+
+     https://getcomposer.org/    国内根本打不开
+
+. compser 是PHP5 以上的一个以来管理工具. 它允许你申明项目所依赖的代码库, 它会在你的项目中为你安装它们. 
+
+. 1. 下载 composer
+
+     https://getcomposer.org/composer.phar      根本打不开。。。
+
+     只能通过 http://jingyan.baidu.com/article/4f34706ed04013e386b56d72.html 介绍的方法来搜索并下载后安装
+
+     a. 通过百度搜索 百度搜索下载 Composer-Setup.exe 安装软件包
+
+        找到一个csdn的共享  使用gegewua/pekin 用户来下载
+
+     b. 安装 Composer的过程出现错误
+
+The PHP exe file you specified did not execute correctly: 
+D:\D_0_DevEnv\php-7.0.11-nts\php.exe
+
+Running it from the command line might highlight the problem.
+Internal Error [ERR_INVALID], exit code 0
+
+        查看错误:
+
+    
+c:\Users\my\AppData\Local\Temp\is-O9FTF.tmp>notepad result.txt
+
+Warning: PHP Startup: Unable to load dynamic library 'C:\php\ext\php_openssl.dll' - 找不到指定的模块。
+ in Unknown on line 0
+3ECDC245-751A-4962-B580-B8A250EDD1CF7.0.11
+   
+
+  然后对照 https://github.com/composer/composer/issues/3324 来分析错误原因
+
+  安装完Openssl 后就可以了
+
+  . 用国图的wifi下载composer-setup.exe ， 然后点击运行安装即可.
+
+. 2. 安装成功后
+
+  默认是安装在~/AppData/Roaming/Composer中，对win7而言:  C:\ProgramData\ComposerSetup\bin
+
+. 3. 运行
+
+  安装完成后,直接在命令行下面运行composer即可.
+
+. 4. 查看现有的PHP 包(包括框架)
+
+  > composer show symfony/symfony     (对应 composer.json的 包)
+
+  如果要查看所有现有包列表, 直接看 composer.json 即可. 
